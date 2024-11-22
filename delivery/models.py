@@ -23,7 +23,7 @@ class User(AbstractUser):
     longitude = models.FloatField(null=True, blank=True)
     status = models.CharField(max_length=20, default='available')
 
-    type = models.CharField(max_length=20, choices=CAR_TYPES, default='light')
+    car_type = models.CharField(max_length=20, choices=CAR_TYPES, default='light', null=True, blank=True)
 
     # Для предотвращения конфликта с родительскими моделями
     groups = models.ManyToManyField(
@@ -37,7 +37,7 @@ class User(AbstractUser):
         blank=True
     )
 
-    def __str__(self):
+    def str(self):
         return self.username
 
 
@@ -68,8 +68,8 @@ class Order(models.Model):
         choices=STATUS_CHOICES,
         default='pending'
     )
-    address = models.TextField()
-    delivery_location = models.TextField(default='Default address')
+    
+    
     startpoint = models.CharField(max_length=50, choices=CITIES, default='Bishkek')
     endpoint = models.CharField(max_length=50, choices=CITIES, default='Osh')
 

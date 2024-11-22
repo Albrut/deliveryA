@@ -12,7 +12,7 @@ class UserAdmin(admin.ModelAdmin):
 # Регистрация модели Order
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('product_name', 'customer', 'delivery', 'status', 'address', 'delivery_location', 'startpoint', 'endpoint')  # Добавлены startpoint и endpoint
+    list_display = ('product_name', 'customer', 'delivery', 'status','startpoint', 'endpoint')  # Добавлены startpoint и endpoint
     list_filter = ('status', 'customer', 'delivery', 'startpoint', 'endpoint')  # Фильтрация по городам
     search_fields = ('product_name', 'customer__username', 'startpoint', 'endpoint')  # Поиск по городам
 
