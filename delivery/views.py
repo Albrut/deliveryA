@@ -102,3 +102,24 @@ class UserOrdersAPIView(APIView):
         orders = Order.objects.filter(customer=user)
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
+
+class ConfirmOrderView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({"detail": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Проверяем, является ли текущий пользователь назначенным доставщиком
+        if order.delivery != request.user:
+            return Response({"detail": "You are not the assigned delivery person for this order."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Если статус заказа 'in_progress', меняем его на 'accepted'
+        if order.status == 'in_progress':
+            order.status = 'accepted'  # Меняем статус на "accepted"
+            order.save()
+            return Response({"detail": "Order confirmed and accepted."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "Order is not in progress."}, status=status.HTTP_400_BAD_REQUEST)
