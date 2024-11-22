@@ -25,6 +25,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             is_delivery=validated_data.get('is_delivery', False),
             first_name=validated_data.get('first_name', None),
             last_name=validated_data.get('last_name', None),
+            type=validated_data.get('type', None),
+
         )
         return user
 

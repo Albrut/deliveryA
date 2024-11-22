@@ -3,8 +3,15 @@ from django.contrib.auth.models import AbstractUser
 
 # Модель User
 class User(AbstractUser):
+    CAR_TYPES = [
+        ('light', 'Легковая'),
+        ('middle', 'Минивэн'),
+        ('hard', 'Грузовая'),
+    ]
     is_customer = models.BooleanField(default=False)  # Клиент
     is_delivery = models.BooleanField(default=False)  # Доставщик
+
+    type = models.CharField(max_length=20, choices=CAR_TYPES, default='light')
 
     # Для предотвращения конфликта с родительскими моделями
     groups = models.ManyToManyField(
