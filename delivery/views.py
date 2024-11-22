@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import Order, User
-from .serializers import OrderSerializer, UserSerializer, UserRegistrationSerializer
+from .serializers import CourierLocationSerializer, OrderSerializer, UserSerializer, UserRegistrationSerializer
 from django.contrib.auth import authenticate, login as auth_login
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
@@ -146,3 +146,38 @@ class CancelOrderView(APIView):
             return Response({"detail": "Order has been canceled."}, status=status.HTTP_200_OK)
         else:
             return Response({"detail": "Order cannot be canceled in its current state."}, status=status.HTTP_400_BAD_REQUEST)
+
+class CourierLocationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        # Получаем текущего курьера (предположим, что это авторизованный пользователь)
+        if not request.user.is_delivery:
+            return Response({"detail": "You are not authorized to view this information."}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Пример получения местоположения курьера (можно хранить в User или отдельной модели)
+        location_data = {
+            'latitude': request.user.latitude,  # Если в модели User есть такие поля
+            'longitude': request.user.longitude,
+            'status': request.user.status,  # Статус курьера: "in_progress", "available" и т.д.
+        }
+
+        return Response(location_data)
+
+    def post(self, request, *args, **kwargs):
+        # Проверяем, является ли пользователь курьером
+        if not request.user.is_delivery:
+            return Response({"detail": "You are not authorized to update this information."}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Получаем данные из запроса
+        serializer = CourierLocationSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            # Обновляем местоположение курьера
+            request.user.latitude = serializer.validated_data['latitude']
+            request.user.longitude = serializer.validated_data['longitude']
+            request.user.status = serializer.validated_data['status']
+            request.user.save()
+
+            return Response({"detail": "Courier location updated successfully."})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

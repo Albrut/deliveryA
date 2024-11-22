@@ -64,3 +64,9 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ['username', 'is_customer', 'is_delivery']
+
+
+class CourierLocationSerializer(serializers.Serializer):
+    latitude = serializers.FloatField()
+    longitude = serializers.FloatField()
+    status = serializers.CharField(max_length=20)

@@ -14,6 +14,9 @@ CITIES = [
 class User(AbstractUser):
     is_customer = models.BooleanField(default=False)  # Клиент
     is_delivery = models.BooleanField(default=False)  # Доставщик
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    status = models.CharField(max_length=20, default='available')
 
     # Для предотвращения конфликта с родительскими моделями
     groups = models.ManyToManyField(
