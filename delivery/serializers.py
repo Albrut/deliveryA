@@ -14,7 +14,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()  # Использует вашу модель User
-        fields = ['username', 'password', 'is_customer', 'is_delivery']  # Включает дополнительные поля
+        fields = ['username', 'password', 'is_customer', 'is_delivery', 'first_name', 'last_name']  # Включает дополнительные поля
 
     def create(self, validated_data):
         # Создание пользователя с проверкой пароля
@@ -23,6 +23,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             is_customer=validated_data.get('is_customer', False),
             is_delivery=validated_data.get('is_delivery', False),
+            first_name=validated_data.get('first_name', None),
+            last_name=validated_data.get('last_name', None),
         )
         return user
 
