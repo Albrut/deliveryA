@@ -52,3 +52,9 @@ class OrderSerializer(serializers.ModelSerializer):
         # Создаем заказ
         order = Order.objects.create(**validated_data)
         return order
+
+    def validate_address(self, value):
+        # Пример дополнительной валидации для адреса
+        if len(value) < 10:
+            raise serializers.ValidationError("Address is too short.")
+        return value
