@@ -1,7 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-# Модель User
+CITIES = [
+    ('Bishkek', 'Bishkek'),
+    ('Osh', 'Osh'),
+    ('Jalal-Abad', 'Jalal-Abad'),
+    ('Karakol', 'Karakol'),
+    ('Naryn', 'Naryn'),
+    ('Batken', 'Batken'),
+    ('Talas', 'Talas'),
+    ('Tokmok', 'Tokmok'),
+]
 class User(AbstractUser):
     is_customer = models.BooleanField(default=False)  # Клиент
     is_delivery = models.BooleanField(default=False)  # Доставщик
@@ -25,17 +34,34 @@ class User(AbstractUser):
 # Модель Order
 class Order(models.Model):
     STATUS_CHOICES = [
-        ('waiting', 'Ожидание'),
-        ('in_progress', 'Идёт'),
-        ('accepted', 'Принят'),
+        ('pending', 'Pending'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('canceled', 'Canceled'),  # Новый статус
     ]
-    
-    customer = models.ForeignKey(User, related_name='orders', on_delete=models.CASCADE)  # Связь с клиентом
-    delivery = models.ForeignKey(User, related_name='assigned_orders', null=True, blank=True, on_delete=models.SET_NULL)  # Связь с доставщиком
+
     product_name = models.CharField(max_length=255)
-    address = models.CharField(max_length=255)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='waiting')
-    delivery_location = models.CharField(max_length=255, blank=True, null=True)  # Местоположение доставщика
+    customer = models.ForeignKey(
+        'User',
+        on_delete=models.CASCADE,
+        related_name='customer_orders'
+    )
+    delivery = models.ForeignKey(
+        'User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='delivery_orders'
+    )
+    status = models.CharField(
+        max_length=50,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+    address = models.TextField()
+    delivery_location = models.TextField(default='Default address')
+    startpoint = models.CharField(max_length=50, choices=CITIES, default='Bishkek')
+    endpoint = models.CharField(max_length=50, choices=CITIES, default='Osh')
 
     def __str__(self):
-        return f"Заказ {self.product_name} для {self.customer.username}"
+        return self.product_name

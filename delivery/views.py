@@ -6,6 +6,7 @@ from .models import Order, User
 from .serializers import OrderSerializer, UserSerializer, UserRegistrationSerializer
 from django.contrib.auth import authenticate, login as auth_login
 from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 
 
 # API для заказов
@@ -123,3 +124,25 @@ class ConfirmOrderView(APIView):
             return Response({"detail": "Order confirmed and accepted."}, status=status.HTTP_200_OK)
         else:
             return Response({"detail": "Order is not in progress."}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class CancelOrderView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({"detail": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Проверяем, может ли пользователь отменить заказ
+        if order.customer != request.user and not request.user.is_staff:
+            raise PermissionDenied("You do not have permission to cancel this order.")
+
+        # Изменяем статус заказа на 'canceled'
+        if order.status in ['pending', 'in_progress']:
+            order.status = 'canceled'
+            order.save()
+            return Response({"detail": "Order has been canceled."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "Order cannot be canceled in its current state."}, status=status.HTTP_400_BAD_REQUEST)
