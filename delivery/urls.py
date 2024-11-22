@@ -8,7 +8,7 @@ from . import views
 
 # Создаём роутер для API
 router = DefaultRouter()
-router.register(r'orders', views.OrderViewSet)
+# router.register(r'orders', views.OrderViewSet)
 router.register(r'users', views.UserViewSet)
 
 urlpatterns = [

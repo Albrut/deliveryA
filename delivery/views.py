@@ -69,7 +69,7 @@ class AcceptOrderView(APIView):
 
 
 class CreateOrderAPIView(APIView):
-    permission_classes = [IsAuthenticated]  # Только для аутентифицированных пользователей
+    permission_classes = []   # Только для аутентифицированных пользователей
 
     def post(self, request, *args, **kwargs):
         # Создаем сериализатор с данными запроса
