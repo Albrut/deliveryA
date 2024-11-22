@@ -89,3 +89,16 @@ class CreateOrderAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    from .models import Order
+    from .serializers import OrderSerializer
+class UserOrdersAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        # Фильтруем заказы, где пользователь — клиент
+        orders = Order.objects.filter(customer=user)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
