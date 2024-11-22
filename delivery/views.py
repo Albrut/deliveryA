@@ -18,6 +18,15 @@ class OrderViewSet(viewsets.ModelViewSet):
         # Устанавливаем заказ для текущего пользователя
         serializer.save(customer=self.request.user)
 
+        def get_queryset(self):
+        # Возвращаем заказы только текущего пользователя
+            user = self.request.user
+            if user.is_customer:
+                return Order.objects.filter(customer=user)  # Заказы, где пользователь — клиент
+            elif user.is_delivery:
+                return Order.objects.filter(delivery=user)  # Заказы, где пользователь — доставщик
+            return Order.objects.none()  # Для других случаев
+
 
 # API для пользователей
 class UserViewSet(viewsets.ModelViewSet):
