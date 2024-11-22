@@ -12,11 +12,18 @@ CITIES = [
     ('Tokmok', 'Tokmok'),
 ]
 class User(AbstractUser):
+    CAR_TYPES = [
+        ('light', 'Легковая'),
+        ('middle', 'Минивэн'),
+        ('hard', 'Грузовая'),
+    ]
     is_customer = models.BooleanField(default=False)  # Клиент
     is_delivery = models.BooleanField(default=False)  # Доставщик
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     status = models.CharField(max_length=20, default='available')
+
+    type = models.CharField(max_length=20, choices=CAR_TYPES, default='light')
 
     # Для предотвращения конфликта с родительскими моделями
     groups = models.ManyToManyField(
