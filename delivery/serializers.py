@@ -65,11 +65,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 # Сериализатор для получения данных пользователя
+from rest_framework import serializers
+from django.contrib.auth import get_user_model
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = get_user_model()
-        fields = ['username', 'is_customer', 'is_delivery']
-
+        model = get_user_model()  # Используем модель пользователя
+        fields = '__all__'  # Возвращаем все поля модели
 
 class CourierLocationSerializer(serializers.Serializer):
     latitude = serializers.FloatField()

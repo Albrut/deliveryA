@@ -210,9 +210,6 @@ class CurrentUserAPIView(APIView):
     authentication_classes = [JWTAuthentication]  # Используем JWT аутентификацию
 
     def get(self, request, *args, **kwargs):
-        # Возвращаем текущего пользователя и его ID
-        user_data = {
-            'username': request.user.username,
-            'id': request.user.id
-        }
-        return Response(user_data)
+        # Используем сериализатор для возврата всех полей пользователя
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
