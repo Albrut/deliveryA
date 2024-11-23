@@ -6,7 +6,7 @@ from .models import Order
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['product_name', 'address', 'status', 'delivery_location', 'startpoint', 'endpoint', 'customer']
+        fields = ['product_name', 'status','startpoint', 'endpoint', 'customer']
         read_only_fields = ['customer', 'status']  # Поля, которые нельзя изменить через API
 
     def create(self, validated_data):

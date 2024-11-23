@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
 from rest_framework_simplejwt import views as jwt_views
-from .views import CourierLocationView, UserOrdersAPIView
+from .views import CourierLocationView, CurrentUserAPIView, UserOrdersAPIView
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -43,6 +43,7 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('api/orders/cancel/<int:order_id>/', views.CancelOrderView.as_view(), name='cancel-order'),
     path('api/courier/location/', CourierLocationView.as_view(), name='courier-location'),
+     path('api/currentuser/', CurrentUserAPIView.as_view(), name='current-user'),
 ]
 
 

@@ -148,24 +148,38 @@ class CancelOrderView(APIView):
             return Response({"detail": "Order cannot be canceled in its current state."}, status=status.HTTP_400_BAD_REQUEST)
 
 class CourierLocationView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]  # Доступ для всех аутентифицированных пользователей
 
     def get(self, request, *args, **kwargs):
-        # Получаем текущего курьера (предположим, что это авторизованный пользователь)
-        if not request.user.is_delivery:
-            return Response({"detail": "You are not authorized to view this information."}, status=status.HTTP_403_FORBIDDEN)
-        
-        # Пример получения местоположения курьера (можно хранить в User или отдельной модели)
-        location_data = {
-            'latitude': request.user.latitude,  # Если в модели User есть такие поля
-            'longitude': request.user.longitude,
-            'status': request.user.status,  # Статус курьера: "in_progress", "available" и т.д.
-        }
+        # Получаем все заказы, где клиент — это текущий пользователь
+        orders = Order.objects.filter(customer=request.user, status='in_progress')
 
-        return Response(location_data)
+        if not orders.exists():
+            return Response({"detail": "No orders in progress for your account."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Заказы с назначенным курьером
+        courier_location_data = []
+        for order in orders:
+            if order.delivery:
+                courier = order.delivery  # Курьер, который доставляет заказ
+                courier_location_data.append({
+                    'order_id': order.id,
+                    'courier_username': courier.username,
+                    'latitude': courier.latitude,
+                    'longitude': courier.longitude,
+                    'status': courier.status  # Статус курьера: "in_progress", "available" и т.д.
+                })
+            else:
+                courier_location_data.append({
+                    'order_id': order.id,
+                    'courier': None,
+                    'message': 'No courier assigned yet.'
+                })
+
+        return Response(courier_location_data)
 
     def post(self, request, *args, **kwargs):
-        # Проверяем, является ли пользователь курьером
+        # Проверяем, является ли пользователь курьером для обновления местоположения
         if not request.user.is_delivery:
             return Response({"detail": "You are not authorized to update this information."}, status=status.HTTP_403_FORBIDDEN)
         
@@ -181,3 +195,24 @@ class CourierLocationView(APIView):
 
             return Response({"detail": "Courier location updated successfully."})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+    
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+class CurrentUserAPIView(APIView):
+    permission_classes = [IsAuthenticated]  # Только для аутентифицированных пользователей
+    authentication_classes = [JWTAuthentication]  # Используем JWT аутентификацию
+
+    def get(self, request, *args, **kwargs):
+        # Возвращаем текущего пользователя и его ID
+        user_data = {
+            'username': request.user.username,
+            'id': request.user.id
+        }
+        return Response(user_data)
