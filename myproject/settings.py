@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'rest_framework', 
     'delivery',
     'rest_framework_simplejwt',
-     'drf_yasg',  
+    'drf_yasg',  
+    'corsheaders',
+
 ]
 
 MIDDLEWARE = [
@@ -52,7 +54,31 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    'https://example.com',
+    'https://anotherdomain.com',
+]
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+]
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',
+    'x-custom-header',
+]
+
+
 
 ROOT_URLCONF = 'myproject.urls'
 
