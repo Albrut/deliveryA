@@ -213,3 +213,17 @@ class CurrentUserAPIView(APIView):
         # Используем сериализатор для возврата всех полей пользователя
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from .models import Order
+from .serializers import OrderSerializer
+
+class CourierOrdersAPIView(generics.ListAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        Возвращает все заказы.
+        """
+        return Order.objects.all()
